@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="TRIO"
+            id="TRIO">
+      </category>
+      <view
+            name="Schermata Principale"
+            inject="true"
+            icon="icons/sample.png"
+            category="TRIO"
+            class="trio.views.SchermataPrincipale"
+            id="trio.views.SchermataPrincipale">
+      </view>
+     
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="TRIO"
+            id="TRIO">
+      </category>
+ 
+      <view
+            name="Schermata Secondaria"
+            inject="true"
+            icon="icons/sample.png"
+            category="TRIO"
+            class="trio.views.SchermataSecondaria"
+            id="trio.views.SchermataSecondaria">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.jdt.ui.JavaPerspective">
+         <view
+               ratio="0.5"
+               relative="org.eclipse.ui.views.ProblemView"
+               relationship="right"
+               id="trio.views.SampleView">
+         </view>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.help.contexts">
+      <contexts
+            file="contexts.xml">
+      </contexts>
+   </extension>
+
+</plugin>
