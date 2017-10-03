@@ -1,5 +1,6 @@
 package trio.views;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -41,8 +42,22 @@ public class Task {
 			SchermataPrincipale schermataPrincipale= (SchermataPrincipale) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("trio.views.SchermataPrincipale");
 			System.out.println(schermataPrincipale.getAlgorithm().get(0));
 			
+			
+			
 			SchermataSecondaria schermataSecondaria= (SchermataSecondaria) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("trio.views.SchermataSecondaria");
 			schermataSecondaria.setGGAMeanAverage(schermataPrincipale.getAlgorithm().get(0));
+			
+			ArrayList<String> criterion=schermataPrincipale.getCriterion();
+			for(int i=0;i<criterion.size();i++) {
+				if(criterion.get(i).equals("StatementCoverage"))
+					schermataSecondaria.getCriterionStatementCoverage().setSelection(true);
+				if(criterion.get(i).equals("BranchCoverage"))
+					schermataSecondaria.getCriterionBranchCoverage().setSelection(true);
+				if(criterion.get(i).equals("PastFaults"))
+					schermataSecondaria.getCriterionPastFaults().setSelection(true);
+			}
+			
+			schermataSecondaria.getRunScale().setSelection(schermataPrincipale.getScale().getSelection());
 		} catch (PartInitException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -63,7 +78,7 @@ public class Task {
 			e1.printStackTrace();
 		}
 		
-		elimina la pria schermata
+		elimina la prima schermata
 		 IWorkbenchPage wp=PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(); 
 		 //Find desired view : 
 		 IViewPart myView=wp.findView("trio.views.SchermataPrincipale"); 
