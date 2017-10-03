@@ -254,9 +254,8 @@ public class SchermataSecondaria extends ViewPart implements IViewPart {
 		 * series.setYSeries(ySeries); IAxisSet axisSet = chart.getAxisSet();
 		 * axisSet.adjustRange();
 		 */
-	//	new LineChartDemo1(compositeSecond.getShell());
-	
-
+		//new LineChartDemo1(compositeSecond);
+		
 		ItemBoxplot.setControl(compositeSecond);
 
 	}
@@ -517,7 +516,17 @@ public class SchermataSecondaria extends ViewPart implements IViewPart {
 	
 
 
-
+	public Button getCriterionStatementCoverage() {
+		return CriterionStatementCoverage;
+	}
+	
+	public Button getCriterionBranchCoverage() {
+		return CriterionBranchCoverage;
+	}
+	
+	public Button getCriterionPastFaults() {
+		return CriterionPastFaults;
+	}
 	
 	public Text getGGAMeanAverage() {
 		
