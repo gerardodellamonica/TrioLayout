@@ -244,9 +244,12 @@ public class SchermataSecondaria extends ViewPart implements IViewPart {
 		ItemMeanStandard.setControl(compositePrincipale);
 
 		///////
+		
+		FillLayout layoutPlot = new FillLayout();
+		layoutPlot.type = SWT.HORIZONTAL;
 
 		Composite compositeSecond = new Composite(tabFolder, SWT.NULL);
-		compositeSecond.setLayout(layout);
+		compositeSecond.setLayout(layoutPlot);
 		/*
 		 * Chart chart=new Chart(compositeSecond, SWT.NONE); double[] ySeries = { 0.3,
 		 * 1.4, 1.3, 1.9, 2.1 }; ISeriesSet seriesSet = chart.getSeriesSet(); ISeries
@@ -254,7 +257,8 @@ public class SchermataSecondaria extends ViewPart implements IViewPart {
 		 * series.setYSeries(ySeries); IAxisSet axisSet = chart.getAxisSet();
 		 * axisSet.adjustRange();
 		 */
-		//new LineChartDemo1(compositeSecond);
+		new LineChartDemo1(compositeSecond);
+		new LineChartDemo1(compositeSecond);
 		
 		ItemBoxplot.setControl(compositeSecond);
 
