@@ -1,13 +1,21 @@
 package trio.views;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -63,9 +71,9 @@ public class SchermataPrincipale extends ViewPart implements IViewPart{
 
 	// path in principal
 	private Text projectJar;
-	private Text auxiliaryFolder;
-	private Text testCaseFolder;
+	private Combo selectProject;
 	private Text outputFolder;
+	
 	// path in other matrice
 	private String projectJarMatrice;
 	private Combo type;
@@ -203,13 +211,13 @@ public class SchermataPrincipale extends ViewPart implements IViewPart{
 		label.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 3, 1));
 
 		button = new Button(composite, SWT.CHECK);
-		button.setText("Branch Coveragey");
+		button.setText("Branch Coverage");
 		button.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 1, 1));
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (criterion.indexOf("BranchCoveragey") == -1)
-					criterion.add("BranchCoveragey");
+				if (criterion.indexOf("BranchCoverage") == -1)
+					criterion.add("BranchCoverage");
 				else
 					criterion.remove("BranchCoveragey");
 			}
@@ -233,7 +241,7 @@ public class SchermataPrincipale extends ViewPart implements IViewPart{
 		});
 
 		button = new Button(composite, SWT.NULL);
-		button.setImage(getImage("setting.png"));
+		button.setText("Setting");
 		button.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 1, 1));
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -277,8 +285,8 @@ public class SchermataPrincipale extends ViewPart implements IViewPart{
 		});
 
 		button = new Button(composite, SWT.NULL);
-		button.setImage(getImage("setting.png"));
-		button.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 1, 1));
+		button.setText("Setting");
+		button.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false, 1, 1));
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -290,9 +298,19 @@ public class SchermataPrincipale extends ViewPart implements IViewPart{
 		label.setText("");
 		label.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 3, 1));
 
+		
+		label = new Label(composite, SWT.NONE);
+		label.setText("");
+		label.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 6, 1));
+		
+		
+		label = new Label(composite, SWT.NONE);
+		label.setText("");
+		label.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 2, 1));
+		
 		button = new Button(composite, SWT.PUSH);
 		button.setText("Run experiment");
-		button.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 6, 1));
+		button.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -323,6 +341,9 @@ public class SchermataPrincipale extends ViewPart implements IViewPart{
 				
 			}
 		});
+		label = new Label(composite, SWT.NONE);
+		label.setText("");
+		label.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 2, 1));
 		
 	}
 
@@ -343,28 +364,45 @@ public class SchermataPrincipale extends ViewPart implements IViewPart{
 		composite.setLayout(gridLayout);
 
 		Label label = new Label(composite, SWT.NONE);
-		label.setText("Project jar");
+		label.setText("Select Project");
 		label.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 1, 1));
 
-		GenerateFileDialog(composite, 5);
+		
+		List<IJavaProject> projectList = new LinkedList<IJavaProject>();
+		selectProject = new Combo(composite, SWT.NULL);
+		
+		 IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+         IProject[] projects = workspaceRoot.getProjects();
+         for(int i = 0; i < projects.length; i++) {
+            IProject project = projects[i];
+            try {
+				if(project.isOpen() && project.hasNature(JavaCore.NATURE_ID)) {
+				   projectList.add(JavaCore.create(project));
+				}
+			} catch (CoreException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+         }
+      
+         for(int i=0;i<projectList.size();i++) {
+        	 
+        	selectProject.add(projectList.get(i).getProject().getName());
+         }
+		
+		selectProject.select(0);
+		selectProject.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 1, 1));
 
 		label = new Label(composite, SWT.NONE);
-		label.setText("Auxiliary folder");
-		label.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 1, 1));
-
-		GenerateAuxiliaryFolderDirectoryDialog(composite, 5);
-
-		label = new Label(composite, SWT.NONE);
-		label.setText("Test cases folder");
-		label.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 1, 1));
-
-		GenerateOutputFolderDirectoryDialog(composite, 5);
+		label.setText("");
+		label.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 4, 1));
+		
 
 		label = new Label(composite, SWT.NONE);
 		label.setText("Output Folder");
 		label.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 1, 1));
 
-		GenerateTestCaseFolderDirectoryDialog(composite, 5);
+		GenerateOutputFolderDirectoryDialog(composite, 5);
 
 		tab1.setControl(composite);
 
@@ -456,48 +494,15 @@ public class SchermataPrincipale extends ViewPart implements IViewPart{
 
 	}
 
-	public static Image getImage(String imageName) {
-		ImageData source = new ImageData(SchermataPrincipale.class.getResourceAsStream(imageName));
-		ImageData mask = source.getTransparencyMask();
-		Image image = new Image(null, source, mask);
-		return image;
-	}
 
-	public void GenerateAuxiliaryFolderDirectoryDialog(Composite composite, int colonne) {
-
-		auxiliaryFolder = new Text(composite, SWT.BORDER);
-		auxiliaryFolder.setText("search");
-		Button button = new Button(composite, SWT.NULL);
-		button.setImage(getImage("folder.png"));
-		button.setText("Browse...");
-
-		button.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				DirectoryDialog dialog = new DirectoryDialog(composite.getShell());
-				String folder = dialog.open();
-				int length = folder.length() - 1;
-
-				if (!(("" + folder.charAt(length - 3)).equals(".")))
-
-					auxiliaryFolder.setText("" + folder);
-
-				else
-					auxiliaryFolder.setText("file non valido");
-			}
-		});
-
-		auxiliaryFolder.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, colonne - 1, 1));
-
-		button.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 1, 1));
-
-	}
+	
 
 	public void GenerateOutputFolderDirectoryDialog(Composite composite, int colonne) {
 
 		outputFolder = new Text(composite, SWT.BORDER);
 		outputFolder.setText("search");
 		Button button = new Button(composite, SWT.NULL);
-		button.setImage(getImage("folder.png"));
+	
 		button.setText("Browse...");
 
 		button.addSelectionListener(new SelectionAdapter() {
@@ -521,77 +526,14 @@ public class SchermataPrincipale extends ViewPart implements IViewPart{
 
 	}
 
-	public void GenerateTestCaseFolderDirectoryDialog(Composite composite, int colonne) {
-
-		testCaseFolder = new Text(composite, SWT.BORDER);
-		testCaseFolder.setText("search");
-		Button button = new Button(composite, SWT.NULL);
-		button.setImage(getImage("folder.png"));
-		button.setText("Browse...");
-
-		button.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				DirectoryDialog dialog = new DirectoryDialog(composite.getShell());
-				String folder = dialog.open();
-				int length = folder.length() - 1;
-
-				if (!(("" + folder.charAt(length - 3)).equals(".")))
-
-					testCaseFolder.setText(folder);
-
-				else
-					testCaseFolder.setText("file non valido");
-			}
-		});
-
-		testCaseFolder.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, colonne - 1, 1));
-
-		button.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 1, 1));
-
-	}
-
-	public void GenerateFileDialog(Composite composite, int colonne) {
-
-		projectJar = new Text(composite, SWT.BORDER);
-		projectJar.setText("search");
-		Button button = new Button(composite, SWT.NULL);
-		button.setImage(getImage("folder.png"));
-		button.setText("Browse...");
-
-		button.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				FileDialog dialog = new FileDialog(composite.getShell());
-				String folder = dialog.open();
-				int length = folder.length() - 1;
-
-				String tipo = "";
-				for (int i = length - 3; i < length; i++) {
-					tipo = tipo + folder.charAt(length);
-				}
-				if (tipo.equals(".jar"))
-					projectJar.setText(folder);
-
-				else
-					projectJar.setText("file non valido");
-			}
-		});
-
-		GridData gridData = new GridData();
-		gridData.horizontalAlignment = SWT.FILL;
-		gridData.grabExcessVerticalSpace = true;
-
-		projectJar.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, colonne - 1, 1));
-
-		button.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 1, 1));
-
-	}
+	
 
 	public void GenerateFileDialogCsv(Composite composite, int colonne) {
 
 		projectJar = new Text(composite, SWT.BORDER);
 		projectJar.setText("search");
 		Button button = new Button(composite, SWT.NULL);
-		button.setImage(getImage("folder.png"));
+		
 		button.setText("Browse...");
 
 		button.addSelectionListener(new SelectionAdapter() {
@@ -629,13 +571,7 @@ public class SchermataPrincipale extends ViewPart implements IViewPart{
 		this.scaleRun = scale;
 	}
 
-	private Text getAuxiliaryFolder() {
-		return auxiliaryFolder;
-	}
-
-	private Text getTestCaseFolder() {
-		return testCaseFolder;
-	}
+	
 
 	private Text getOutputFolder() {
 		return outputFolder;
@@ -649,6 +585,11 @@ public class SchermataPrincipale extends ViewPart implements IViewPart{
 		return problem;
 	}
 
+	private Combo getselectProject() {
+		return selectProject;
+	}
+	
+	
 	private Combo getType() {
 		return type;
 	}
